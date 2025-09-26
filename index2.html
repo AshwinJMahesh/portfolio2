@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashwin J Mahesh - Portfolio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(to right, #c8f0d2, #a7d5ff);
+            color: #000;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .card {
+            width: 200px;
+            height: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .works-btn 
+        {
+          background-color: green;
+          color: black;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 25px;
+          cursor: pointer;
+         }
+     .works-btn:hover 
+     {
+      background-color: #0056b3;
+     }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Works/Clients</h1>
+    <div class="gallery" id="gallery"></div>
+        <div>
+            <a href="index.html" style="text-decoration: none;"><button class="works-btn">Back</button></a>
+        </div>
+    <script>
+        const gallery = document.getElementById('gallery');
+
+        // Retrieve photos from localStorage
+        const storedPhotos = JSON.parse(localStorage.getItem('photos')) || [];
+
+        storedPhotos.forEach(photo => {
+            // Create a card for each photo
+            const card = document.createElement('div');
+            card.classList.add('card');
+
+            // Add the image to the card
+            const img = document.createElement('img');
+            img.src = photo;
+
+            // Make the card clickable
+            card.addEventListener('click', () => {
+                window.open(photo, '_blank');
+            });
+
+            card.appendChild(img);
+            gallery.appendChild(card);
+        });
+    </script>
+</body>
+</html>

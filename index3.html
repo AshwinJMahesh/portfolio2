@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashwin J Mahesh - Portfolio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(to right, #c8f0d2, #a7d5ff);
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .upload-container {
+            text-align: center;
+        }
+
+        .upload-btn {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .view-gallery-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .card {
+            width: 200px;
+            height: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            position: relative;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h1>Upload Here</h1>
+        <input type="file" id="photoUpload" class="upload-btn" accept="image/*" multiple>
+        <a href="index2.html" class="view-gallery-btn">View Gallery</a>
+    </div>
+    <div class="gallery" id="gallery"></div>
+
+    <script>
+        const photoUpload = document.getElementById('photoUpload');
+        const gallery = document.getElementById('gallery');
+
+        // Retrieve existing photos from localStorage
+        let storedPhotos = JSON.parse(localStorage.getItem('photos')) || [];
+
+        // Function to display photos in the gallery
+        function displayPhotos() {
+            gallery.innerHTML = ''; // Clear the gallery before re-rendering
+
+            storedPhotos.forEach((photo, index) => {
+                // Create a card for each photo
+                const card = document.createElement('div');
+                card.classList.add('card');
+
+                // Add the image to the card
+                const img = document.createElement('img');
+                img.src = photo;
+
+                // Add a delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.classList.add('delete-btn');
+                deleteBtn.innerHTML = '&times;';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent the card click event
+                    deletePhoto(index);
+                });
+
+                card.appendChild(img);
+                card.appendChild(deleteBtn);
+                gallery.appendChild(card);
+            });
+        }
+
+        // Function to delete a photo
+        function deletePhoto(index) {
+            storedPhotos.splice(index, 1); // Remove the photo from the array
+            localStorage.setItem('photos', JSON.stringify(storedPhotos)); // Update localStorage
+            displayPhotos(); // Re-render the gallery
+        }
+
+        // Event listener for file upload
+        photoUpload.addEventListener('change', function(event) {
+            const files = event.target.files;
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    storedPhotos.push(e.target.result); // Add the photo to the array
+                    localStorage.setItem('photos', JSON.stringify(storedPhotos)); // Update localStorage
+                    displayPhotos(); // Re-render the gallery
+                };
+
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Initial rendering of photos
+        displayPhotos();
+    </script>
+    <a href="index.html"><button class="white-btn"></button></a>
+</body>
+</html>
