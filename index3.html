@@ -32,6 +32,27 @@
             font-size: 16px;
         }
 
+        .description-input {
+            margin-top: 10px;
+            padding: 8px;
+            width: 240px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            resize: none;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
         .view-gallery-btn {
             margin-top: 20px;
             padding: 10px 20px;
@@ -54,23 +75,25 @@
 
         .card {
             width: 200px;
-            height: 200px;
+            min-height: 220px;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             cursor: pointer;
             transition: transform 0.3s;
             position: relative;
+            padding-bottom: 10px;
         }
 
         .card img {
             width: 100%;
-            height: 100%;
+            height: 150px;
             object-fit: cover;
         }
 
@@ -94,12 +117,26 @@
             align-items: center;
             justify-content: center;
         }
+
+        .card-description {
+            margin-top: 8px;
+            padding: 0 10px;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+            word-break: break-word;
+        }
     </style>
 </head>
 <body>
     <div class="upload-container">
         <h1>Upload Here</h1>
         <input type="file" id="photoUpload" class="upload-btn" accept="image/*" multiple>
+        <br>
+        <textarea id="descriptionInput" class="description-input" placeholder="Enter description for the selected images (applies to all selected)"></textarea>
+        <br>
+        <button id="submitBtn" class="submit-btn">Upload</button>
+        <br>
         <a href="index2.html" class="view-gallery-btn">View Gallery</a>
     </div>
     <div class="gallery" id="gallery"></div>
@@ -107,6 +144,8 @@
     <script>
         const photoUpload = document.getElementById('photoUpload');
         const gallery = document.getElementById('gallery');
+        const descriptionInput = document.getElementById('descriptionInput');
+        const submitBtn = document.getElementById('submitBtn');
 
         // Retrieve existing photos from localStorage
         let storedPhotos = JSON.parse(localStorage.getItem('photos')) || [];
@@ -115,14 +154,19 @@
         function displayPhotos() {
             gallery.innerHTML = ''; // Clear the gallery before re-rendering
 
-            storedPhotos.forEach((photo, index) => {
+            storedPhotos.forEach((photoObj, index) => {
                 // Create a card for each photo
                 const card = document.createElement('div');
                 card.classList.add('card');
 
                 // Add the image to the card
                 const img = document.createElement('img');
-                img.src = photo;
+                img.src = photoObj.photo;
+
+                // Add description if any
+                const descDiv = document.createElement('div');
+                descDiv.classList.add('card-description');
+                descDiv.textContent = photoObj.description || '';
 
                 // Add a delete button
                 const deleteBtn = document.createElement('button');
@@ -135,6 +179,7 @@
 
                 card.appendChild(img);
                 card.appendChild(deleteBtn);
+                card.appendChild(descDiv);
                 gallery.appendChild(card);
             });
         }
@@ -146,21 +191,35 @@
             displayPhotos(); // Re-render the gallery
         }
 
-        // Event listener for file upload
-        photoUpload.addEventListener('change', function(event) {
-            const files = event.target.files;
+        // Event listener for upload button
+        submitBtn.addEventListener('click', function() {
+            const files = photoUpload.files;
+            const description = descriptionInput.value.trim();
+
+            if (files.length === 0) {
+                alert("Please select images to upload.");
+                return;
+            }
 
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
 
                 reader.onload = function(e) {
-                    storedPhotos.push(e.target.result); // Add the photo to the array
+                    // Save both image and description
+                    storedPhotos.push({
+                        photo: e.target.result,
+                        description: description
+                    });
                     localStorage.setItem('photos', JSON.stringify(storedPhotos)); // Update localStorage
                     displayPhotos(); // Re-render the gallery
                 };
 
                 reader.readAsDataURL(file);
             });
+
+            // Reset input fields after upload
+            photoUpload.value = '';
+            descriptionInput.value = '';
         });
 
         // Initial rendering of photos
