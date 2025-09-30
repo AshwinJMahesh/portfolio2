@@ -22,13 +22,11 @@
             text-align: center;
         }
 
-        .upload-btn {
+        .upload-btn, .desc-input {
             padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
+            margin: 10px 0;
+            border: 1px solid #ccc;
             border-radius: 5px;
-            cursor: pointer;
             font-size: 16px;
         }
 
@@ -99,13 +97,15 @@
 <body>
     <div class="upload-container">
         <h1>Upload Here</h1>
-        <input type="file" id="photoUpload" class="upload-btn" accept="image/*" multiple>
+        <input type="file" id="photoUpload" class="upload-btn" accept="image/*">
+        <input type="text" id="photoDescription" class="desc-input" placeholder="Enter description">
         <a href="index2.html" class="view-gallery-btn">View Gallery</a>
     </div>
     <div class="gallery" id="gallery"></div>
 
     <script>
         const photoUpload = document.getElementById('photoUpload');
+        const photoDescription = document.getElementById('photoDescription');
         const gallery = document.getElementById('gallery');
 
         // Retrieve existing photos from localStorage
@@ -122,7 +122,7 @@
 
                 // Add the image to the card
                 const img = document.createElement('img');
-                img.src = photo;
+                img.src = photo.image;
 
                 // Add a delete button
                 const deleteBtn = document.createElement('button');
@@ -148,24 +148,24 @@
 
         // Event listener for file upload
         photoUpload.addEventListener('change', function(event) {
-            const files = event.target.files;
+            const file = event.target.files[0];
 
-            Array.from(files).forEach(file => {
+            if (file) {
                 const reader = new FileReader();
 
                 reader.onload = function(e) {
-                    storedPhotos.push(e.target.result); // Add the photo to the array
+                    const description = photoDescription.value || 'No description'; // Get the description
+                    storedPhotos.push({ image: e.target.result, description }); // Add the photo and description to the array
                     localStorage.setItem('photos', JSON.stringify(storedPhotos)); // Update localStorage
                     displayPhotos(); // Re-render the gallery
                 };
 
                 reader.readAsDataURL(file);
-            });
+            }
         });
 
         // Initial rendering of photos
         displayPhotos();
     </script>
-    <a href="index.html"><button class="white-btn"></button></a>
 </body>
 </html>
