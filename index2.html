@@ -23,23 +23,40 @@
 
         .card {
             width: 200px;
-            height: 200px;
+            height: 250px;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             cursor: pointer;
             transition: transform 0.3s;
+            position: relative;
         }
 
         .card img {
             width: 100%;
-            height: 100%;
+            height: 150px;
             object-fit: cover;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .card .desc {
+            padding: 10px;
+            text-align: center;
+            font-size: 1em;
+            color: #333;
+            flex: 1;
+            background: rgba(255,255,255,0.5);
+            width: 100%;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            box-sizing: border-box;
         }
 
         .card:hover {
@@ -69,24 +86,43 @@
     <script>
         const gallery = document.getElementById('gallery');
 
-        // Retrieve photos from localStorage
+        // Retrieve photo objects (with src and desc) from localStorage
+        // Expected format: [{src: '...', desc: '...'}, ...]
         const storedPhotos = JSON.parse(localStorage.getItem('photos')) || [];
 
-        storedPhotos.forEach(photo => {
+        storedPhotos.forEach(photoObj => {
+            // Support both old format (just src) and new format ({src, desc})
+            let src, desc;
+            if (typeof photoObj === "string") {
+                src = photoObj;
+                desc = ""; // No description
+            } else {
+                src = photoObj.src;
+                desc = photoObj.desc || "";
+            }
+
             // Create a card for each photo
             const card = document.createElement('div');
             card.classList.add('card');
 
             // Add the image to the card
             const img = document.createElement('img');
-            img.src = photo;
+            img.src = src;
 
             // Make the card clickable
             card.addEventListener('click', () => {
-                window.open(photo, '_blank');
+                window.open(src, '_blank');
             });
 
             card.appendChild(img);
+
+            // Add the description if available
+            const descDiv = document.createElement('div');
+            descDiv.className = 'desc';
+            descDiv.textContent = desc;
+
+            card.appendChild(descDiv);
+
             gallery.appendChild(card);
         });
     </script>
